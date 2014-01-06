@@ -1,0 +1,71 @@
+import sys
+import math
+def solve(a,other,D):
+    rs = 0
+    st=-1
+    i = -1
+    est_time = math.sqrt(D/(0.5*a))
+    for j in range(len(other)):
+        x = 0.5*a*other[j][0]*other[j][0]
+        if x >= other[j][1]:
+            if i == -1: i=j
+            if other[j][1] <=D:  
+                st = j
+    if st != -1:
+        for k in range(st,len(other)):
+            if other[k][1] == D:
+                time_1 = other[k][0]
+                break
+            elif other[k][1] > D:
+                #v = (other[k][1] - other[k-1][1] - 0.5*a*(other[k][0] - other[k-1][0])**2)/(other[k][0] - other[k-1][0]) 
+                v = (other[k][1] - other[k-1][1])/(other[k][0] - other[k-1][0])   
+                t = (D-other[k-1][1])/v
+                time_1 = t + other[k-1][0]
+                break
+        time_2 = math.sqrt(other[st][1]/(0.5*a))
+        return max(other[st][0]+est_time-time_2,time_1)
+    else:
+        if i > 0:
+            v = (other[i][1] - other[i-1][1])/(other[i][0] - other[i-1][0])
+            time_1 = (D-other[i-1][1])/v
+            if other[i-1][0] > 0:
+                time_2 = est_time - math.sqrt(other[i-1][1]/(0.5*a))
+                if time_2 < time_1:  
+                    return other[i-1][0] + time_1
+                return est_time
+            else:
+                #print est_time , time_1
+                if est_time < time_1:
+                    if est_time - math.sqrt(other[i-1][1]/(0.5*a)) < time_1: 
+                        return time_1
+                return est_time
+        else:
+            return est_time 
+    
+    
+                       
+                
+                                               
+
+testcase = int(sys.stdin.readline().strip())
+case = 1
+for _ in range(testcase):
+    D,N,A = sys.stdin.readline().strip().split()
+    D = float(D)
+    N = int(N)
+    A = int(A)
+    other = []
+    accelerations = []
+    for _ in range(N):
+        t,x = sys.stdin.readline().strip().split()
+        t = float(t)
+        x = float(x)
+        other.append((t,x)) 
+    accelerations = map(float,sys.stdin.readline().strip().split())
+    print "Case #%d:" %case
+    for a in accelerations:
+        rs = solve(a,other,D)
+        print "%.6f" %(rs)
+    case +=1
+        
+        
